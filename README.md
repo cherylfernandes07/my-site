@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Site
+
+This is a Next.js App Router project with Gemini chat powered by AI SDK v6.
 
 ## Getting Started
 
-First, run the development server:
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Chat Integration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Chat is implemented with:
 
-## Learn More
+- API route: `app/api/chat/route.ts`
+- Client component: `app/components/chat.tsx`
+- Home page mount point: `app/page.tsx`
 
-To learn more about Next.js, take a look at the following resources:
+Required environment variable:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `.env.local` must contain:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
+```
 
-## Deploy on Vercel
+## AI SDK v6 Protocol Pairing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For `useChat` with `@ai-sdk/react`, the server should:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Convert incoming UI messages to model messages.
+2. Return a UI message stream response.
+
+Recommended pattern in `app/api/chat/route.ts`:
+
+```ts
+import { convertToModelMessages, streamText } from "ai";
+import { google } from "@ai-sdk/google";
+
+export async function POST(req: Request) {
+	const { messages } = await req.json();
+
+	const result = streamText({
+		model: google("gemini-flash-latest"),
+		messages: convertToModelMessages(messages),
+	});
+
+	return result.toUIMessageStreamResponse();
+}
+```
+
+## Troubleshooting
+
+### 200 OK but no response in UI
+
+Symptom:
+
+- Request to `/api/chat` returns 200, but no assistant message appears.
+
+Most common cause:
+
+- Stream format mismatch between client and server.
+
+Fix checklist:
+
+1. Confirm `app/api/chat/route.ts` uses `convertToModelMessages(messages)`.
+2. Confirm `app/api/chat/route.ts` returns `toUIMessageStreamResponse()`.
+3. Confirm `app/components/chat.tsx` imports `useChat` from `@ai-sdk/react`.
+4. In browser dev tools, confirm response header `x-vercel-ai-ui-message-stream: v1`.
+5. Restart dev server after route or env changes.
+
+### Cannot find useChat in ai/react
+
+Cause:
+
+- AI SDK v6 moved hooks out of `ai/react`.
+
+Fix:
+
+- Install `@ai-sdk/react` and import `useChat` from `@ai-sdk/react`.
+
+### Tailwind oxide native binding missing (macOS)
+
+Symptom:
+
+- Build errors mention `@tailwindcss/oxide-darwin-arm64` or optional dependencies.
+
+Fix in project root:
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## References
+
+- Next.js docs: [https://nextjs.org/docs](https://nextjs.org/docs)
+- AI SDK docs: [https://ai-sdk.dev/docs](https://ai-sdk.dev/docs)
+- Google AI Studio API keys: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
