@@ -28,6 +28,37 @@ Required environment variable:
 GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
 ```
 
+## Vercel Environment Variables
+
+When deploying to Vercel, set this environment variable in your project settings:
+
+- `GOOGLE_GENERATIVE_AI_API_KEY`
+
+Path:
+
+- Vercel Dashboard -> Project -> Settings -> Environment Variables
+
+After saving the variable, redeploy so the API route can read it at runtime.
+
+## Safety Guardrails
+
+This project uses a layered guardrails approach (defense-in-depth), not a "guard summary".
+
+Current layers are implemented in `app/api/chat/route.ts`:
+
+1. Input guardrails:
+	- Checks the latest user message for blocked sensitive terms (for example: password, credit card, ssn, social security).
+	- Returns `400` without calling the model when blocked content is detected.
+2. Behavioral guardrails:
+	- Sends a system instruction to the model to keep responses respectful, constructive, and within policy.
+	- Tells the assistant to decline harmful or sensitive requests.
+
+Why this helps:
+
+- Prevents some risky prompts before they reach Gemini.
+- Reinforces safe behavior during generation.
+- Uses multiple checks instead of relying on a single safety mechanism.
+
 ## AI SDK v6 Protocol Pairing
 
 For `useChat` with `@ai-sdk/react`, the server should:
