@@ -1,5 +1,6 @@
 import { convertToModelMessages, streamText } from "ai";
 import { google } from "@ai-sdk/google";
+import fs from "fs";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -15,12 +16,34 @@ export async function POST(req: Request) {
     );
   }
 
+  // Load resume XML for context
+  let resumeContent = "";
+  try {
+    resumeContent = fs.readFileSync("/Users/cherylfernandes/Documents/GitHub/resume/resume_template.xml", "utf-8");
+  } catch (error) {
+    console.warn("Resume file not found, proceeding without resume context");
+  }
+
+  // Get chat mode from environment (strict or best-effort)
+  const chatMode = process.env.CHAT_MODE || "best-effort";
+  const isStrictMode = chatMode === "strict";
+
+  // Build system prompt based on mode
+  const systemPrompt = isStrictMode
+    ? `You are Cheryl's resume assistant. You ONLY answer questions based on the resume provided below. If a question is not answerable from the resume, respond with: "I can only answer questions about Cheryl's resume from the provided information."
+
+Here is Cheryl's resume:
+${resumeContent}`
+    : `You are Cheryl's resume assistant. You primarily answer questions based on Cheryl's resume provided below. You may provide general context or advice when helpful, but always prioritize resume information. If information is not in the resume, be clear about what you're supplementing with general knowledge.
+
+Here is Cheryl's resume:
+${resumeContent}`;
+
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
     model: google("gemini-flash-latest"),
-    // System message: Gentle guidance on conversation scope
-    system: "You are a helpful assistant. Please keep conversations respectful and constructive. Decline requests that involve sensitive personal information, illegal activities, or harmful content.",
+    system: systemPrompt,
     messages: modelMessages,
   });
 
