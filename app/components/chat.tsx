@@ -1,11 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useEffect, useState } from "react";
 import { useChat } from "@ai-sdk/react";
+import ReactMarkdown from "react-markdown";
 
 export default function Chat() {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status } = useChat();
+  const isLoading = status === "submitted" || status === "streaming";
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages, isLoading]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -17,11 +26,36 @@ export default function Chat() {
     await sendMessage({ text });
   }
 
-  return (
-    <div className="flex flex-col h-screen max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-semibold mb-4">Gemini Chat</h1>
+  const suggestedQuestions = [
+    "What are the key skills?",
+    "Summarize the experience",
+    "What projects have been completed?"
+  ];
 
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+  async function handleSuggestedQuestion(question: string) {
+    await sendMessage({ text: question });
+  }
+
+  return (
+    <div className="flex h-full min-h-[calc(100vh-2rem)] flex-col rounded-[2rem] border border-slate-200 bg-white/90 p-4 shadow-2xl shadow-slate-900/5 backdrop-blur lg:min-h-[calc(100vh-2.5rem)]">
+      <div className="mb-4 flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-600">
+            Resume Assistant
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 lg:hidden">
+            Ask questions about Cheryl&apos;s Resume or scroll to read
+          </h1>
+          <h1 className="hidden mt-2 text-2xl font-semibold tracking-tight text-slate-950 lg:block">
+            Read the resume and ask questions in the chat below.
+          </h1>
+        </div>
+        <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500">
+          {isLoading ? "Thinking" : "Ready"}
+        </div>
+      </div>
+
+      <div ref={messagesContainerRef} className="flex-1 space-y-3 overflow-y-auto pr-1">
         {messages.map((m) => {
           const text = m.parts
             .filter((part) => part.type === "text")
@@ -31,35 +65,62 @@ export default function Chat() {
           return (
             <div
               key={m.id}
-              className={`p-3 rounded-lg ${
+              className={`max-w-[92%] rounded-2xl p-4 text-sm leading-6 ${
                 m.role === "user"
-                  ? "bg-blue-100 self-end text-right"
-                  : "bg-gray-100 self-start"
+                  ? "ml-auto bg-slate-950 text-white"
+                  : "mr-auto border border-slate-200 bg-slate-100 text-slate-800"
               }`}
             >
-              <span className="block text-xs font-semibold text-gray-500 mb-1 capitalize">
+              <span className={`mb-2 block text-[11px] font-semibold uppercase tracking-[0.24em] ${m.role === "user" ? "text-slate-300" : "text-slate-500"}`}>
                 {m.role}
               </span>
-              {text}
+              <ReactMarkdown>{text}</ReactMarkdown>
             </div>
           );
         })}
-        {status === "streaming" && (
-          <div className="text-sm text-gray-400 italic">Gemini is typing...</div>
+        {messages.length === 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500 mb-3">Suggested Questions</p>
+            {suggestedQuestions.map((question) => (
+              <button
+                key={question}
+                onClick={() => handleSuggestedQuestion(question)}
+                disabled={isLoading}
+                className="w-full text-left rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 transition hover:bg-blue-50 hover:border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        )}
+        {isLoading && (
+          <div
+            className="mr-auto inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-500"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-700" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1" aria-hidden="true">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-500" style={{ animationDelay: "0ms" }} />
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-500" style={{ animationDelay: "200ms" }} />
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-slate-500" style={{ animationDelay: "400ms" }} />
+            </span>
+            <span>Gemini is typing...</span>
+          </div>
         )}
       </div>
 
-      <form onSubmit={onSubmit} className="flex gap-2">
+      <form onSubmit={onSubmit} className="mt-4 flex gap-2 border-t border-slate-200 pt-4">
         <input
-          className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-100"
           value={input}
           onChange={(event) => setInput(event.target.value)}
-          placeholder="Say something..."
+          placeholder="Ask about Cheryl's Resume..."
         />
         <button
           type="submit"
-          disabled={status === "streaming"}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+          disabled={isLoading}
+          className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Send
         </button>

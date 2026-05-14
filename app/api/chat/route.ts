@@ -1,13 +1,27 @@
 import { convertToModelMessages, streamText } from "ai";
 import { google } from "@ai-sdk/google";
-import fs from "fs";
+import { embedQuery } from "@/lib/embeddings";
+import { getIndex } from "@/lib/pinecone";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  // Input validation: Block sensitive topics
-  const lastMessage = messages[messages.length - 1]?.content || "";
+
+  // Input validation: Empty/whitespace message and sensitive topics
+  const lastMessageText = messages[messages.length - 1];
+  const lastMessage = 
+  lastMessageText?.parts?.find((p: {type: string}) => p.type === 'text')?.text 
+  ?? lastMessageText?.content  // fallback for older format
+  ?? "";
   const blockedKeywords = ["password", "credit card", "ssn", "social security"];
+  console.log("**** 1. " , messages, messages[messages.length - 1], (lastMessage || 'none'))
+  if (!lastMessage.trim()) {
+    console.log("**** 2. ")
+    return new Response(
+      JSON.stringify({ error: "Message is empty." }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
   if (blockedKeywords.some(word => lastMessage.toLowerCase().includes(word))) {
     return new Response(
@@ -16,28 +30,36 @@ export async function POST(req: Request) {
     );
   }
 
-  // Load resume XML for context
-  let resumeContent = "";
-  try {
-    resumeContent = fs.readFileSync("/Users/cherylfernandes/Documents/GitHub/resume/resume_template.xml", "utf-8");
-  } catch (error) {
-    console.warn("Resume file not found, proceeding without resume context");
-  }
+  // 1. Embed the user's question
+  const queryVector = await embedQuery(lastMessage);
+
+  // 2. Search Pinecone for the most relevant chunks
+  const results = await getIndex().query({
+    vector: queryVector,
+    topK: 5,                  // retrieve top 5 most relevant chunks
+    includeMetadata: true,    // we need the original text back
+  });
+
+  // 3. Extract the text from each matching chunk
+  const relevantChunks = results.matches
+    .map(match => match.metadata?.text as string)
+    .filter(Boolean)
+    .join("\n\n---\n\n");
 
   // Get chat mode from environment (strict or best-effort)
   const chatMode = process.env.CHAT_MODE || "best-effort";
   const isStrictMode = chatMode === "strict";
 
-  // Build system prompt based on mode
+  // 4. Build system prompt with retrieved context (same logic as before)
   const systemPrompt = isStrictMode
-    ? `You are Cheryl's resume assistant. You ONLY answer questions based on the resume provided below. If a question is not answerable from the resume, respond with: "I can only answer questions about Cheryl's resume from the provided information."
+    ? `You are Cheryl's website assistant. You ONLY answer questions based on the documents provided below. If a question is not answerable from the provided documents, respond with: "I can only answer questions about the provided site documents."
 
-Here is Cheryl's resume:
-${resumeContent}`
-    : `You are Cheryl's resume assistant. You primarily answer questions based on Cheryl's resume provided below. You may provide general context or advice when helpful, but always prioritize resume information. If information is not in the resume, be clear about what you're supplementing with general knowledge.
+Here are the relevant documents:
+${relevantChunks || "No relevant documents found."}`
+    : `You are Cheryl's website assistant. You primarily answer questions based on the provided site documents. You may provide general context or advice when helpful, but always prioritize the site documents. If information is not in the documents, be clear about what you're supplementing with general knowledge.
 
-Here is Cheryl's resume:
-${resumeContent}`;
+Here are the relevant documents:
+${relevantChunks || "No relevant documents found."}`;
 
   const modelMessages = await convertToModelMessages(messages);
 
@@ -47,7 +69,5 @@ ${resumeContent}`;
     messages: modelMessages,
   });
 
-  // Keep UI message stream format for useChat in @ai-sdk/react.
-  // Switching this to text stream can return 200 while showing no chat response in the UI.
   return result.toUIMessageStreamResponse();
 }

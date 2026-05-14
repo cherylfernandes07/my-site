@@ -1,8 +1,63 @@
-# My Site
+# Resume Assistant
 
-This is a Next.js App Router project with Gemini chat powered by AI SDK v6.
+A modern Next.js website featuring an XSLT-rendered resume with an integrated AI chat assistant powered by Google Gemini Flash.
+
+## Overview
+
+This project combines a beautifully rendered resume (transformed from XML via XSLT) with an intelligent chat interface. Users can ask questions about the resume, and the AI assistant retrieves relevant context using Pinecone vector search with semantic understanding.
+
+**Key Features:**
+- ✨ Resume rendered from XML using XSLT for clean, semantic markup
+- 💬 AI-powered chat with suggested starter questions
+- 🎯 RAG (Retrieval-Augmented Generation) using Pinecone for context-aware responses
+- 📱 Responsive side-by-side layout (70% resume, 30% fixed chat panel)
+- ⚡ Real-time streaming responses with loading indicators
+- 📝 Markdown rendering for rich chat formatting
+- 🔄 Auto-scrolling chat with smooth UX
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router) with React 19
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **LLM:** Google Gemini Flash via AI SDK v6
+- **Vector DB:** Pinecone (for semantic search)
+- **XML Processing:** xslt-processor (pure JavaScript XSLT)
+- **Chat UI:** React Markdown for formatted responses
 
 ## Getting Started
+
+### Prerequisites
+
+Use Node.js v20.19.6:
+
+```bash
+nvm use 20.19.6
+```
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Setup
+
+Create a `.env.local` file in the project root with the following:
+
+```bash
+# Google Generative AI API
+GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here
+
+# Pinecone Vector Database
+PINECONE_API_KEY=your_pinecone_api_key_here
+PINECONE_INDEX_NAME=your_index_name
+
+# Azure OpenAI (for embeddings, if using)
+AZURE_OPENAI_API_KEY=your_azure_key_here
+```
+
+### Development
 
 Run the development server:
 
@@ -10,7 +65,87 @@ Run the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser. The page will auto-update as you make changes.
+
+### Production Build
+
+```bash
+npm run build
+npm start
+```
+
+## Project Structure
+
+```
+my-site/
+├── app/
+│   ├── api/
+│   │   └── chat/
+│   │       └── route.ts              # Chat API endpoint
+│   ├── components/
+│   │   └── chat.tsx                  # Chat UI component with auto-scroll
+│   ├── lib/
+│   │   ├── render-resume-html.ts     # XSLT transformation helper
+│   │   ├── knowledge.ts              # Knowledge base initialization
+│   │   ├── embeddings.ts             # Embedding generation
+│   │   └── pinecone.ts               # Pinecone client setup
+│   ├── globals.css                   # Global styles
+│   ├── layout.tsx                    # Root layout
+│   └── page.tsx                      # Home page (70/30 resume + chat)
+├── lib/
+│   ├── chunker.ts                    # Document chunking for embeddings
+│   ├── embeddings.ts                 # Shared embedding utilities
+│   └── pinecone.ts                   # Shared Pinecone utilities
+├── public/
+│   └── assets/
+│       └── docs/
+│           ├── resume_template.xml   # Resume source data
+│           ├── resume_template.xslt  # XSLT stylesheet for rendering
+│           └── images/               # Assets
+├── scripts/
+│   ├── ingest.ts                     # Ingest resume into Pinecone
+│   ├── test-embeddings.ts            # Test embedding generation
+│   └── test-pinecone.ts              # Test Pinecone connection
+├── package.json
+├── tsconfig.json
+├── tailwind.config.ts
+└── next.config.ts
+```
+
+## Features in Detail
+
+### Resume Rendering (XSLT)
+
+- Source: `public/assets/docs/resume_template.xml`
+- Stylesheet: `public/assets/docs/resume_template.xslt`
+- Helper: `app/lib/render-resume-html.ts`
+
+The resume is transformed server-side from XML to HTML using XSLT, ensuring:
+- Clean semantic markup
+- Scoped CSS to prevent conflicts with page styles
+- Print-friendly responsive design
+
+### Chat Interface
+
+**Components:**
+- `app/components/chat.tsx` - Main chat UI with suggested questions
+- `app/api/chat/route.ts` - API endpoint with safety guardrails
+
+**Features:**
+- **Suggested Questions:** 3 starter prompts appear when no messages exist
+- **Auto-scroll:** Messages container auto-scrolls to latest when new messages arrive
+- **Loading Indicator:** Animated spinner + 3 pulsing dots during response generation
+- **Markdown Rendering:** Chat responses support full Markdown formatting
+- **Status Chip:** Shows "Thinking" while generating, "Ready" when idle
+
+### RAG (Retrieval-Augmented Generation)
+
+Chat responses use context from the resume:
+
+1. User question is embedded using Azure OpenAI/Claude embeddings
+2. Pinecone searches for similar resume sections
+3. Relevant context is sent to Gemini with the question
+4. Gemini generates a response grounded in resume data
 
 ## Chat Integration
 
@@ -20,25 +155,56 @@ Chat is implemented with:
 - Client component: `app/components/chat.tsx`
 - Home page mount point: `app/page.tsx`
 
-Required environment variable:
+## Deployment
 
-- `.env.local` must contain:
+### Vercel
+
+When deploying to Vercel, configure these environment variables in your project settings:
+
+**Path:** Vercel Dashboard → Project → Settings → Environment Variables
+
+**Required variables:**
+- `GOOGLE_GENERATIVE_AI_API_KEY` - Google Generative AI API key
+- `PINECONE_API_KEY` - Pinecone API key
+- `PINECONE_INDEX_NAME` - Your Pinecone index name
+- `AZURE_OPENAI_API_KEY` - Azure OpenAI key (if using for embeddings)
+
+After saving, redeploy the project so the API route can access these variables at runtime.
+
+### Environment Variables Reference
+
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini Flash LLM | ✅ Yes |
+| `PINECONE_API_KEY` | Vector database auth | ✅ Yes |
+| `PINECONE_INDEX_NAME` | Pinecone index name | ✅ Yes |
+| `AZURE_OPENAI_API_KEY` | Embedding generation | ✅ Yes |
+
+## Scripts
+
+### Ingest Resume into Pinecone
+
+Chunk and embed the resume, then upload to Pinecone:
 
 ```bash
-GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
+npx ts-node scripts/ingest.ts
 ```
 
-## Vercel Environment Variables
+### Test Embeddings
 
-When deploying to Vercel, set this environment variable in your project settings:
+Verify embedding generation is working:
 
-- `GOOGLE_GENERATIVE_AI_API_KEY`
+```bash
+npx ts-node scripts/test-embeddings.ts
+```
 
-Path:
+### Test Pinecone Connection
 
-- Vercel Dashboard -> Project -> Settings -> Environment Variables
+Verify Pinecone connection and index:
 
-After saving the variable, redeploy so the API route can read it at runtime.
+```bash
+npx ts-node scripts/test-pinecone.ts
+```
 
 ## Safety Guardrails
 

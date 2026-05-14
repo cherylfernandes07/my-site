@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resume>
+
+  <!-- ========== PERSONAL INFO ========== -->
+  <personal>
+    <name>Cheryl Fernandes</name>
+    <title>AI Engineer with a UI focus</title>
+    <email>cherylfernandes07@gmail.com</email>
+    <phone>(817) 312-7192</phone>
+    <location>San Jose, CA</location>
+    <linkedin>https://www.linkedin.com/in/cheryl-joan-fernandes-90967611/</linkedin>
+    <website>https://sites.google.com/view/cferns3456/home</website>
+    <portfolio>https://github.com/cherylfernandes07/</portfolio>
+  </personal>
+
+  <!-- ========== SUMMARY ========== -->
+  <!-- Tip: Ask AI to rewrite this to match a job description -->
+  <summary>
+   Over 5 years of experience in UI focused roles and most recently AI/ML feature integration experience. Comfortable using EY software environments.
+  </summary>
+
+  <!-- ========== SKILLS ========== -->
+  <!-- Tip: Ask AI to reorder or add skills based on a job posting -->
+  <skills>
+    <category name="Technical">
+      <skill>FastAPI</skill>
+      <skill>Python3</skill>
+      <skill>React</skill>
+       <skill>Angular v17</skill>
+      <skill>TailWind</skill>
+      <skill>Vite</skill>
+      <skill>EYs Motif</skill>
+    </category>
+    <category name="Tools &amp; Platforms">
+      <skill>Docker</skill>
+      <skill>TypeScript</skill>
+      <skill>PostgreSql</skill>
+      <skill>DuckDB</skill>
+      <skill>Echarts</skill>
+      <skill>Claude</skill>
+      <skill>Co-Pilot</skill>
+      <skill>Hugging Face transformers with a PyTorch backend</skill>
+      <skill>OpenAI SDK</skill>
+      <skill>LangChain</skill>
+      <skill>LangGraph</skill>
+      <skill>FAISS</skill>
+      <skill>Tavily</skill>
+      <skill>Azure AI</skill>
+    </category>
+    <category name="Compliance and Standards">
+      <skill>Internationalization (i18n)</skill>
+      <skill>W3C</skill>
+      <skill>Accessibility (Section 508, ADA Compliance, WCAG 2.0)</skill>
+      <skill>HIPPA</skill>
+      <skill>PHI</skill>
+      <skill>OWASP</skill>
+      <skill>XXS</skill>
+      <skill>CSRF Tokens</skill>
+      <skill>Sentiment Analysis</skill>
+      <skill>Word Vectors</skill>
+      <skill>Neural NLP</skill>
+      <skill>LMs/RNNs/LSTMs</skill>
+      <skill>Transformers</skill>
+      <skill>Pre/Post training</skill>
+      <skill>BERT</skill>
+      <skill>Large language models (LLMs)</skill>
+      <skill>High-fidelity prototyping</skill>
+      <skill>Wireframes</skill>
+      <skill>Storyboarding</skill>
+      <skill>Responsive Design</skill>
+      <skill>Usability Testing</skill>
+      <skill>MVC</skill>
+      <skill>Surveys</skill>
+      <skill>Personas</skill>
+      <skill>Nielsen's Principles</skill>
+      <skill>DOM manipulation</skill>
+    </category>
+    <category name="Soft Skills">
+      <skill>Analysis of structured and unstructured data</skill>
+      <skill>EY security principles</skill>
+      <skill>Token management</skill>
+      <skill>Prompt Writing</skill>
+      <skill>Designing with Figma</skill>
+      <skill>Testing with TestCraft AI</skill>
+      <skill>Chat-based websocket design</skill>
+    </category>
+  </skills>
+
+  <!-- ========== EXPERIENCE ========== -->
+  <!-- Tip: Ask AI to tailor bullet points to match keywords in a job description -->
+  <experience>
+
+    <job>
+      <company>Contractor at Ernst and Young (EY)</company>
+      <title>UI Developer</title>
+      <location>San Jose, CA Hybrid (Tues-Thurs)</location>
+      <start>Sep 2025</start>
+      <end>Present</end> <!-- Use "Present" if current -->
+      <description>FastAPI-based services for LLM-driven workflows, optimizing production code with EYs Motif UI Angular components.</description>
+      <!-- <url>https://www.ey.com</url> -->
+      <bullets>
+        <bullet>Built end-to-end data workflow UI in Angular for EY's Analytics Lite platform, covering file ingestion, SQL exploration, data quality validation, roll-forward, and certified output steps behind Azure AD (MSAL) authentication, reducing manual handoff steps by 40%.</bullet>
+        <bullet>Developed AI-assisted natural language to SQL/Python query generation and chart specification endpoints using Azure OpenAI, enabling analysts to query structured datasets and generate visualizations through a conversational interface, cutting query turnaround time by 60%.</bullet>
+        <bullet>Engineered document Q&amp;A features with RAG pipeline backed by Azure AI Search and Azure OpenAI, supporting streaming answers, image-based questions, web-augmented retrieval, and table extraction from uploaded PDFs, improving answer retrieval accuracy by 35%.</bullet>
+        <bullet>Designed agentic SQL and RAG workflows using LangGraph/LangChain, with per-user DuckDB-backed structured data access and Azure Blob Storage for unstructured document management, reducing agent response latency by 25%.</bullet>
+        <bullet>Contributed to Python FastAPI backend services for audit trail tracking, user authorization against SQL Server, and Superset dashboard automation with runtime configuration via Azure Key Vault, increasing dashboard deployment throughput by 30%.</bullet>
+      </bullets>
+    </job>
+
+    <job>
+      <company>VitalConnect, Inc.</company>
+      <title>Mobile Tech Lead, Software Engineer</title>
+      <location>San Jose, CA Remote</location>
+      <start>Aug 2018</start>
+      <end>July 2025</end>
+      <description>Developed products for doctors, nurses, patients, hospital technicians, and care teams for real-time patient monitoring.</description>
+      <!-- <url>https://www.vitalconnect.com</url> -->
+      <bullets>
+        <bullet>Accomplished Angular v16 migration and component modernization by implementing NGXS state management and mobile-first patterns, resulting in a 30% faster feature release cadence.</bullet>
+        <bullet>Managed real-time UX reliability by integrating NgRx WebSockets, Storybook-driven UI workflows, and healthcare-compliant API patterns, improving notification delivery consistency by 25%.</bullet>
+        <bullet>Accomplished secure API and device-management delivery by building SDK services with JDK8, SureMDM deployment jobs, and HIPAA/PHI safeguards, resulting in a 20% reduction in deployment incidents.</bullet>
+        <bullet>Managed full-stack application quality by developing Android SDK features and Docker-based micro frontends with Module Federation and NestJS-backed data flows, improving app responsiveness by 18%.</bullet>
+        <bullet>Managed build and quality automation by creating ES6 and Gulp validation scripts and Bamboo pipelines for test and Clover reporting, improving release readiness by 28%.</bullet>
+        <bullet>Accomplished multilingual and production-readiness improvements by implementing JSON-based localization, code splitting, and structured logging, reducing localization update effort by 35% and improving production reliability by 20%.</bullet>
+      </bullets>
+    </job>
+
+    <job>
+      <company>Kenandy, Inc.</company>
+      <title>UI Developer</title>
+      <location>Redwood City, CA</location>
+      <start>Nov 2015</start>
+      <end>Jan 2018</end>
+      <description>Built elevated Salesforce UI experiences for small and medium businesses across web and mobile surfaces.</description>
+      <!-- <url>https://www.kenandy.com</url> -->
+      <bullets>
+        <bullet>Migrated Kendo/jQuery to React with HOC patterns, D3.js visualizations, and Jest tests, improving maintainability by 35%.</bullet>
+        <bullet>Built React Native apps with Salesforce and LWC integrations for iOS and Android, improving release consistency by 25%.</bullet>
+        <bullet>Resolved UX and cross-browser issues for 10+ Salesforce developers, reducing defect turnaround by 30%.</bullet>
+        <bullet>Developed Salesforce Apex, triggers, Visualforce pages, and REST/SOAP integrations, improving reliability by 20%.</bullet>
+        <bullet>Optimized early React Native code paths and bundle behavior, achieving up to 50% faster runtime performance.</bullet>
+      </bullets>
+    </job>
+
+    <job>
+      <company>StrongAuth, Inc.</company>
+      <title>Software Engineer</title>
+      <location>Sunnyvale, CA</location>
+      <start>Apr 2013</start>
+      <end>Nov 2015</end>
+      <description>Built secure file storage and sharing products for banks and enterprise customers with strong authentication and compliance requirements.</description>
+      <!-- <url>https://www.strongauth.com</url> -->
+      <bullets>
+        <bullet>Integrated JDK8 security modules with OWASP practices across AWS and Azure, reducing high-risk findings by 30%.</bullet>
+        <bullet>Built FIDO/2FA features using Java Servlets, JUnit, Selenium, jQuery 2.0, and Chrome extensions, improving reliability by 25%.</bullet>
+        <bullet>Created Balsamiq mockups, improved W3C/SEO compliance via Joomla theming by 70%, and published docs with Publican.</bullet>
+      </bullets>
+    </job>
+
+    <job>
+      <company>PowerCloud Systems, Inc.</company>
+      <title>UI Designer</title>
+      <location>PARC</location>
+      <start>Pre-2015</start>
+      <end></end>
+      <description>Designed and manufactured cloud-powered Wi-Fi systems for businesses, carriers, and consumers.</description>
+      <!-- <url>https://www.powercloudsystems.com</url> -->
+      <bullets>
+        <bullet>Built and maintained product rollout websites under tight deadlines, improving SEO visibility by 25%.</bullet>
+        <bullet>Created digital/print UI assets with CSS sprites and vector icons, reducing page load overhead by 20%.</bullet>
+        <bullet>Architected a custom WordPress theme with jQuery animation and responsive SASS layouts, improving usability by 30%.</bullet>
+      </bullets>
+    </job>
+
+    <job>
+      <company>University of Illinois at Chicago</company>
+      <title>Graduate Assistant, IT Technical Associate</title>
+      <location>Chicago, IL</location>
+      <start>Pre-2015</start>
+      <end></end>
+      <description>Supported EEO reporting operations and IT technical support services across multiple departments.</description>
+      <!-- <url>https://www.uic.edu</url> -->
+      <bullets>
+        <bullet>Built Blackboard/SoftChalk training workflows with employee registration and certificate generation.</bullet>
+        <bullet>Developed a Visual Basic + SQL app for EEO record search across departments and titles.</bullet>
+        <bullet>Improved usability via time-based filters, macros, and website redesigns across multiple departments.</bullet>
+      </bullets>
+    </job>
+
+    <job>
+      <company>Flexi Resources</company>
+      <title>Web Developer</title>
+      <location>India</location>
+      <start>Pre-2015</start>
+      <end></end>
+      <description>Delivered CMS-driven websites with SEO optimization and standards-compliant frontend implementation.</description>
+      <!-- <url>https://www.flexiresources.com</url> -->
+      <bullets>
+        <bullet>Built and maintained CMS websites with reusable CSS templates, improving SEO and content update turnaround.</bullet>
+        <bullet>Delivered W3C-compliant, cross-browser interfaces with Google Maps integrations for location-based features.</bullet>
+        <bullet>Implemented PHP CRUD modules with database parsing workflows to streamline product catalog management.</bullet>
+      </bullets>
+    </job>
+
+  </experience>
+
+  <!-- ========== EDUCATION ========== -->
+  <education>
+    <degree>
+      <school>University of Illinois, Chicago</school>
+      <credential>Masters in Computer Science, HCI</credential>
+    </degree>
+    <degree>
+      <school>VTU, India</school>
+      <credential>Bachelors in Engineering, Computer Science</credential>
+    </degree>
+  </education>
+
+  <!-- ========== CERTIFICATIONS ========== -->
+  <!-- Delete section if not applicable -->
+  <certifications>
+    <cert>
+      <name>Natural Language Processing with Deep Learning (XCS224N)</name>
+      <issuer>Stanford Online</issuer>
+      <grade>92.09%</grade>
+    </cert>
+    <cert>
+      <name>Google Data Analytics Professional Certificate</name>
+      <issuer>Coursera</issuer>
+      <grade>In Progress</grade>
+    </cert>
+    <cert>
+      <name>Python for Data Science, AI & Development</name>
+      <issuer>Coursera (IBM)</issuer>
+      <grade>In Progress</grade>
+    </cert>
+  </certifications>
+
+  <!-- ========== PROJECTS ========== -->
+  <!-- Optional: great for portfolio work or career changers -->
+  <!-- <projects>
+    <project>
+      <name>Project Name</name>
+      <description>Brief description of what you built/did and the impact or tech used.</description>
+      <link>github.com/yourproject</link>
+    </project>
+  </projects> -->
+
+  <!-- ========== ACADEMIC WORK ========== -->
+  <academic>
+    <area>Human-Computer Interaction</area>
+    <area>Data Mining</area>
+    <area>Data Visualization</area>
+    <area>Prototype interfaces for an Events Calendar on small-screen devices</area>
+    <area>Ontology Matching</area>
+    <area>Natural Language Processing</area>
+    <area>Deep Learning</area>
+  </academic>
+
+  <!-- ========== OTHER EXPERIENCE ========== -->
+  <other>
+    <category name="Hackathons &amp; Volunteering">
+      <item>Won first place at a gender prediction classification algorithm to classify pieces of text using LingPipe</item>
+      <item>Won SF Fashion Week and The Expat Woman Hackathon</item>
+      <item>DevNetwork [AI + ML] Hackathon 2026 Participant, Techtonica</item>
+    </category>
+  </other>
+
+</resume>
