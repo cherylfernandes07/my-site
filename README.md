@@ -55,9 +55,21 @@ PINECONE_INDEX_NAME=your_index_name
 
 # Azure OpenAI (for embeddings, if using)
 AZURE_OPENAI_API_KEY=your_azure_key_here
+
+# Neon Postgres (Phase 1 response cache)
+DATABASE_URL=postgresql://user:password@host/database
+
+# Optional cache TTL in days (defaults to 30)
+CHAT_CACHE_TTL_DAYS=30
 ```
 
 ### Development
+
+Before first run with cache enabled, apply the database schema in:
+
+- `files/001_initial_schema.sql`
+
+You can run it in Neon SQL Editor or with your preferred Postgres client.
 
 Run the development server:
 
@@ -168,6 +180,7 @@ When deploying to Vercel, configure these environment variables in your project 
 - `PINECONE_API_KEY` - Pinecone API key
 - `PINECONE_INDEX_NAME` - Your Pinecone index name
 - `AZURE_OPENAI_API_KEY` - Azure OpenAI key (if using for embeddings)
+- `DATABASE_URL` - Neon Postgres connection string (for persistent response cache)
 
 After saving, redeploy the project so the API route can access these variables at runtime.
 
@@ -179,6 +192,8 @@ After saving, redeploy the project so the API route can access these variables a
 | `PINECONE_API_KEY` | Vector database auth | ✅ Yes |
 | `PINECONE_INDEX_NAME` | Pinecone index name | ✅ Yes |
 | `AZURE_OPENAI_API_KEY` | Embedding generation | ✅ Yes |
+| `DATABASE_URL` | Neon Postgres response cache | ✅ Yes for cache |
+| `CHAT_CACHE_TTL_DAYS` | Cache expiration window in days | Optional |
 
 ## Scripts
 
@@ -298,3 +313,14 @@ npm install
 - Next.js docs: [https://nextjs.org/docs](https://nextjs.org/docs)
 - AI SDK docs: [https://ai-sdk.dev/docs](https://ai-sdk.dev/docs)
 - Google AI Studio API keys: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+
+## Future Work
+
+### Client localStorage cache
+
+Planned Phase 2 optimization:
+
+- Add a per-user localStorage cache in the chat client for instant repeat answers.
+- Check local cache before sending requests to `/api/chat`.
+- Keep Neon as the shared server-side cache and localStorage as a fast device-level cache.
+- Add TTL and a clear-cache UI control to avoid stale answers.

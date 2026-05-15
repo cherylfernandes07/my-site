@@ -1,7 +1,15 @@
-import { convertToModelMessages, streamText } from "ai";
+import {
+  convertToModelMessages,
+  createUIMessageStream,
+  createUIMessageStreamResponse,
+  streamText,
+} from "ai";
 import { google } from "@ai-sdk/google";
 import { embedQuery } from "@/lib/embeddings";
 import { getIndex } from "@/lib/pinecone";
+import { getCachedAnswer, setCachedAnswer } from "@/lib/cache";
+
+const isDev = true; //process.env.NODE_ENV !== "production";
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
@@ -9,14 +17,13 @@ export async function POST(req: Request) {
 
   // Input validation: Empty/whitespace message and sensitive topics
   const lastMessageText = messages[messages.length - 1];
-  const lastMessage = 
-  lastMessageText?.parts?.find((p: {type: string}) => p.type === 'text')?.text 
-  ?? lastMessageText?.content  // fallback for older format
-  ?? "";
+  const lastMessage =
+    lastMessageText?.parts?.find((p: { type: string }) => p.type === "text")?.text ??
+    lastMessageText?.content ??
+    "";
   const blockedKeywords = ["password", "credit card", "ssn", "social security"];
-  console.log("**** 1. " , messages, messages[messages.length - 1], (lastMessage || 'none'))
+
   if (!lastMessage.trim()) {
-    console.log("**** 2. ")
     return new Response(
       JSON.stringify({ error: "Message is empty." }),
       { status: 400, headers: { "Content-Type": "application/json" } }
@@ -28,6 +35,34 @@ export async function POST(req: Request) {
       JSON.stringify({ error: "I cannot help with that topic for security reasons." }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
+  }
+
+  // Phase 1 cache: short-circuit Gemini on cache hit.
+  const cached = await getCachedAnswer(lastMessage);
+  if (cached) {
+    if (isDev) {
+      console.info("[chat-cache] hit", {
+        answerChars: cached.answer.length,
+        sourcesUsed: cached.sourcesUsed.length,
+      });
+    }
+
+    const stream = createUIMessageStream({
+      execute: ({ writer }) => {
+        const id = `cached-${Date.now()}`;
+
+        writer.write({ type: "text-start", id });
+        writer.write({ type: "text-delta", id, delta: cached.answer });
+        writer.write({ type: "text-end", id });
+      },
+    });
+
+    return createUIMessageStreamResponse({
+      stream,
+      headers: {
+        "X-Cache": "HIT",
+      },
+    });
   }
 
   // 1. Embed the user's question
@@ -45,6 +80,21 @@ export async function POST(req: Request) {
     .map(match => match.metadata?.text as string)
     .filter(Boolean)
     .join("\n\n---\n\n");
+
+  const sourcesUsed = [
+    ...new Set(
+      results.matches
+        .map((match) => (typeof match.metadata?.source === "string" ? match.metadata.source : ""))
+        .filter(Boolean)
+    ),
+  ];
+
+  if (isDev) {
+    console.info("[chat-cache] miss", {
+      matchedChunks: results.matches.length,
+      sourcesUsed: sourcesUsed.length,
+    });
+  }
 
   // Get chat mode from environment (strict or best-effort)
   const chatMode = process.env.CHAT_MODE || "best-effort";
@@ -67,7 +117,14 @@ ${relevantChunks || "No relevant documents found."}`;
     model: google("gemini-flash-latest"),
     system: systemPrompt,
     messages: modelMessages,
+    onFinish: async ({ text }) => {
+      await setCachedAnswer(lastMessage, text, sourcesUsed);
+    },
   });
 
-  return result.toUIMessageStreamResponse();
+  return result.toUIMessageStreamResponse({
+    headers: {
+      "X-Cache": "MISS",
+    },
+  });
 }
