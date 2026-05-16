@@ -2,7 +2,7 @@
 // Neon DB client + retrieval and cache helpers.
 // Used by app/api/chat/route.ts — never import heavy deps here.
 
-import { neon } from '@neondatabase/serverless';
+import { neon, neonConfig } from '@neondatabase/serverless';
 import crypto from 'crypto';
 
 // ─────────────────────────────────────────
@@ -13,6 +13,10 @@ if (!process.env.DATABASE_URL) {
 }
 
 export const sql = neon(process.env.DATABASE_URL);
+
+// rawQuery allows plain string SQL with positional params — needed when
+// Neon's tagged template literal can't infer array parameter types.
+export const rawQuery = neon(process.env.DATABASE_URL, { fullResults: false });
 
 // Cache TTL in days — override via CHAT_CACHE_TTL_DAYS in Vercel env vars
 const CACHE_TTL_DAYS = Number(process.env.CHAT_CACHE_TTL_DAYS ?? 7);
@@ -133,9 +137,46 @@ export async function retrieveSections(
     query.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 2)
   )];
 
-  // Full-text search vector from the query
-  const tsQuery = keywords.join(' | ');  // OR across all terms
+  // If no keywords, return empty
+  if (keywords.length === 0) return [];
 
+  const tsQuery = keywords.join(' | ');
+
+  // Query without source filter
+  if (!sources || sources.length === 0) {
+    const rows = await sql`
+      SELECT
+        cs.id,
+        s.slug  AS source_slug,
+        cs.section_key,
+        cs.title,
+        cs.content,
+        cs.keywords,
+        (
+          ts_rank(
+            to_tsvector('english', cs.title || ' ' || cs.content),
+            to_tsquery('english', ${tsQuery})
+          )
+          + (
+            SELECT COUNT(*)::FLOAT / GREATEST(array_length(cs.keywords, 1), 1)
+            FROM   unnest(${keywords}::TEXT[]) kw
+            WHERE  kw = ANY(cs.keywords)
+          ) * 0.5
+        ) AS score
+      FROM   content_sections cs
+      JOIN   sources s ON s.id = cs.source_id
+      WHERE  (
+        to_tsvector('english', cs.title || ' ' || cs.content)
+          @@ to_tsquery('english', ${tsQuery})
+        OR cs.keywords && ${keywords}::TEXT[]
+      )
+      ORDER  BY score DESC
+      LIMIT  ${limit}
+    `;
+    return rows as ContentSection[];
+  }
+
+  // Query with source filter
   const rows = await sql`
     SELECT
       cs.id,
@@ -144,7 +185,6 @@ export async function retrieveSections(
       cs.title,
       cs.content,
       cs.keywords,
-      -- Score: FTS rank + keyword overlap bonus
       (
         ts_rank(
           to_tsvector('english', cs.title || ' ' || cs.content),
@@ -163,10 +203,7 @@ export async function retrieveSections(
         @@ to_tsquery('english', ${tsQuery})
       OR cs.keywords && ${keywords}::TEXT[]
     )
-    AND (
-      ${sources ?? null} IS NULL
-      OR s.slug = ANY(${sources ?? []}::TEXT[])
-    )
+    AND s.slug = ANY(${sources}::TEXT[])
     ORDER  BY score DESC
     LIMIT  ${limit}
   `;

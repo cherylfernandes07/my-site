@@ -51,7 +51,7 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_google_api_key_here
 
 # Pinecone Vector Database
 PINECONE_API_KEY=your_pinecone_api_key_here
-PINECONE_INDEX_NAME=your_index_name
+PINECONE_INDEX=your_index_name
 
 # Azure OpenAI (for embeddings, if using)
 AZURE_OPENAI_API_KEY=your_azure_key_here
@@ -65,11 +65,23 @@ CHAT_CACHE_TTL_DAYS=30
 
 ### Development
 
-Before first run with cache enabled, apply the database schema in:
+Before first run with cache enabled, run this SQL in Neon SQL Editor (or your preferred Postgres client):
 
-- `files/001_initial_schema.sql`
+```sql
+CREATE TABLE IF NOT EXISTS query_cache (
+	question_hash TEXT PRIMARY KEY,
+	question_norm TEXT NOT NULL,
+	answer TEXT NOT NULL,
+	sources_used TEXT[] NOT NULL DEFAULT '{}',
+	hit_count INT NOT NULL DEFAULT 0,
+	expires_at TIMESTAMPTZ NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	last_hit_at TIMESTAMPTZ
+);
 
-You can run it in Neon SQL Editor or with your preferred Postgres client.
+CREATE INDEX IF NOT EXISTS idx_query_cache_expires_at
+	ON query_cache(expires_at);
+```
 
 Run the development server:
 
@@ -178,7 +190,7 @@ When deploying to Vercel, configure these environment variables in your project 
 **Required variables:**
 - `GOOGLE_GENERATIVE_AI_API_KEY` - Google Generative AI API key
 - `PINECONE_API_KEY` - Pinecone API key
-- `PINECONE_INDEX_NAME` - Your Pinecone index name
+- `PINECONE_INDEX` - Your Pinecone index name
 - `AZURE_OPENAI_API_KEY` - Azure OpenAI key (if using for embeddings)
 - `DATABASE_URL` - Neon Postgres connection string (for persistent response cache)
 
@@ -190,7 +202,7 @@ After saving, redeploy the project so the API route can access these variables a
 |----------|---------|----------|
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini Flash LLM | ✅ Yes |
 | `PINECONE_API_KEY` | Vector database auth | ✅ Yes |
-| `PINECONE_INDEX_NAME` | Pinecone index name | ✅ Yes |
+| `PINECONE_INDEX` | Pinecone index name | ✅ Yes |
 | `AZURE_OPENAI_API_KEY` | Embedding generation | ✅ Yes |
 | `DATABASE_URL` | Neon Postgres response cache | ✅ Yes for cache |
 | `CHAT_CACHE_TTL_DAYS` | Cache expiration window in days | Optional |
