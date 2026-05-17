@@ -336,3 +336,13 @@ Planned Phase 2 optimization:
 - Check local cache before sending requests to `/api/chat`.
 - Keep Neon as the shared server-side cache and localStorage as a fast device-level cache.
 - Add TTL and a clear-cache UI control to avoid stale answers.
+
+## If the resume.xml file changes,
+
+1. Clear the old cache (so stale answers don't get served after your content changes):
+sql DELETE FROM query_cache;
+Run that in your Neon SQL editor.
+2. Re-run the seed script:
+bash npx dotenv -e .env.development.local -- npx tsx scripts/seed-xml.ts
+The seed uses upsert so it will update existing rows in content_sections automatically — no need to delete them first. Only the cache needs manual clearing since cached answers may reference outdated content.
+FUTURE WORK: You can also automate the cache clear as part of the seed, Add it to the end of seed-xml.ts so it's one command instead of two.

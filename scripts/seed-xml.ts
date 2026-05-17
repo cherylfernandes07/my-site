@@ -11,7 +11,8 @@
 import fs from 'fs';
 import path from 'path';
 import { XMLParser } from 'fast-xml-parser';
-import { upsertSection, markSourceSynced } from '../lib/db';
+import { sql, upsertSection, markSourceSynced } from '../lib/db';
+
 
 // ─────────────────────────────────────────
 // Config
@@ -256,6 +257,19 @@ async function main() {
 
   console.log(`\n🎉  Done — ${inserted}/${sections.length} sections upserted.`);
   console.log(`    Source '${SOURCE_SLUG}' marked as synced.`);
+
+  // Clear stale cache entries for this source so users always get fresh answers
+  console.log('\n🗑️   Clearing stale cache entries for source: xml...');
+  try {
+    await sql`
+      DELETE FROM query_cache
+      WHERE sources_used @> ARRAY['xml']::TEXT[]
+    `;
+    console.log('    Cache cleared. ✓');
+  } catch (err) {
+    console.warn('    ⚠️  Cache clear failed (non-fatal):', err);
+  }
+
 }
 
 main().catch(err => {

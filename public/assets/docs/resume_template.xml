@@ -16,7 +16,7 @@
   <!-- ========== SUMMARY ========== -->
   <!-- Tip: Ask AI to rewrite this to match a job description -->
   <summary>
-   Over 5 years of experience in UI focused roles and most recently AI/ML feature integration experience. Comfortable using EY software environments.
+   Over 5 years of experience in UI focused roles and most recently AI/ML feature integration experience.
   </summary>
 
   <!-- ========== SKILLS ========== -->
@@ -238,13 +238,13 @@
 
   <!-- ========== PROJECTS ========== -->
   <!-- Optional: great for portfolio work or career changers -->
-  <!-- <projects>
-    <project>
-      <name>Project Name</name>
-      <description>Brief description of what you built/did and the impact or tech used.</description>
-      <link>github.com/yourproject</link>
-    </project>
-  </projects> -->
+  <projects> 
+    <project> 
+      <name>AI-Powered Resume Assistant</name> 
+      <description>Built a Next.js and TypeScript web app that renders a resume from XML/XSLT and adds a real-time AI chat assistant. Integrated Google Gemini Flash with Pinecone-based retrieval (RAG) so responses stay grounded in resume and site content, and added streaming UX, suggested prompts, and safety guardrails to improve clarity and reliability for visitors.</description> 
+      <link>https://my-site-sigma-mauve.vercel.app/</link> 
+    </project> 
+  </projects>
 
   <!-- ========== ACADEMIC WORK ========== -->
   <academic>
