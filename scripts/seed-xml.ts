@@ -169,6 +169,26 @@ function parseResumeXml(xmlContent: string): ResumeSection[] {
     });
   }
 
+  // ── Projects ─────────────────────────────────────
+  // XML: <projects><project><name>...</name><description>...</description><link>...</link></project></projects>
+  const projects: any[] = resume.projects?.project ?? [];
+  projects.forEach((proj: any) => {
+    const name    = proj.name ?? 'Project';
+    const desc    = proj.description ?? '';
+    const link    = proj.link ?? '';
+    const content = [
+      desc,
+      link && `Link: ${link}`,
+    ].filter(Boolean).join('\n');
+
+    sections.push({
+      section_key: `project.${name.toLowerCase().replace(/[\s&]+/g, '_')}`,
+      title: `Project: ${name}`,
+      content,
+      keywords: extractKeywords(`${name} ${desc}`),
+    });
+  });  
+
   // ── Academic Work ────────────────────────────────
   // XML: <academic><area>...</area></academic>
   const areas: string[] = resume.academic?.area ?? [];
