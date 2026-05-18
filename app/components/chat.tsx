@@ -59,12 +59,42 @@ function extractSearchTerms(query: string): string {
     .join(' ');
 }
 
+function isRateLimitError(err: unknown): boolean {
+  const e = err as { status?: number; message?: string; errorText?: string };
+
+  const blob = [
+    String(e?.status ?? ""),
+    e?.message ?? "",
+    e?.errorText ?? "",
+    JSON.stringify(err ?? ""),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return (
+    e?.status === 429 ||
+    blob.includes("429") ||
+    blob.includes("quota") ||
+    blob.includes("resource exhausted") ||
+    blob.includes("rate limit") ||
+    blob.includes("failed after 3 attempts")
+  );
+}
+
 // ─────────────────────────────────────────
 // Component
 // ─────────────────────────────────────────
 export default function Chat() {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status } = useChat({
+  onError: (error) => {
+    if (isRateLimitError(error)) {
+      setRateLimitHit(true);
+      return;
+    }
+    console.error("Chat stream error:", error);
+  },    
+  });
   const isLoading = status === "submitted" || status === "streaming";
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -132,17 +162,12 @@ export default function Chat() {
   async function callGemini(text: string) {
     try {
       await sendMessage({ text });
-    } catch (err: any) {
-      const is429 =
-        err?.status === 429 ||
-        err?.message?.includes("429") ||
-        err?.message?.toLowerCase().includes("resource exhausted") ||
-        err?.message?.toLowerCase().includes("quota");
-      if (is429) {
+    } catch (err) {
+      if (isRateLimitError(err)) {
         setRateLimitHit(true);
-      } else {
-        throw err;
+        return;
       }
+      throw err;
     }
   }
 
