@@ -81,6 +81,31 @@ CREATE TABLE IF NOT EXISTS query_cache (
 
 CREATE INDEX IF NOT EXISTS idx_query_cache_expires_at
 	ON query_cache(expires_at);
+
+CREATE TABLE IF NOT EXISTS token_usage_log (
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	user_id TEXT NOT NULL DEFAULT 'default',
+	total_tokens INT NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_token_usage_log_user_created_at
+	ON token_usage_log(user_id, created_at);
+```
+
+Token usage logs are stored in `token_usage_log`.
+
+- `user_id`: logical user identifier (currently defaults to `default`)
+- `total_tokens`: total tokens consumed for a model response
+- `created_at`: event timestamp for time-based reporting
+
+Quick verification query:
+
+```sql
+SELECT id, user_id, total_tokens, created_at
+FROM token_usage_log
+ORDER BY created_at DESC
+LIMIT 20;
 ```
 
 Run the development server:

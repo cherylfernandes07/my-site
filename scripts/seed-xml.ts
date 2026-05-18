@@ -23,6 +23,22 @@ const DEFAULT_XML_PATH = path.join(process.cwd(), 'public', 'assets', 'docs', 'r
 
 const SOURCE_SLUG = 'xml';
 
+async function ensureTokenUsageSchema() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS token_usage_log (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id TEXT NOT NULL DEFAULT 'default',
+      total_tokens INT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `;
+
+  await sql`
+    CREATE INDEX IF NOT EXISTS idx_token_usage_log_user_created_at
+      ON token_usage_log(user_id, created_at)
+  `;
+}
+
 
 // ─────────────────────────────────────────
 // XML → section chunks
@@ -226,6 +242,9 @@ function parseResumeXml(xmlContent: string): ResumeSection[] {
 // ─────────────────────────────────────────
 
 async function main() {
+  console.log('🧱  Ensuring token usage schema...');
+  await ensureTokenUsageSchema();
+
   const xmlPath = process.argv[2]
     ? path.resolve(process.argv[2])
     : DEFAULT_XML_PATH;
