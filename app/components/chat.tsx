@@ -108,7 +108,12 @@ export default function Chat() {
 
   // Load resume sections from Neon on mount
   useEffect(() => {
-    fetch("/api/sections")
+    fetch("/api/sections", {
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache",
+      },
+    })
       .then(r => r.json())
       .then(data => {
         if (data.sections) {

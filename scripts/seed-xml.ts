@@ -39,6 +39,16 @@ async function ensureTokenUsageSchema() {
   `;
 }
 
+async function deleteObsoleteXmlSections(currentSectionKeys: string[]) {
+  await sql`
+    DELETE FROM content_sections cs
+    WHERE cs.source_id = (
+      SELECT id FROM sources WHERE slug = ${SOURCE_SLUG}
+    )
+    AND NOT (cs.section_key = ANY(${currentSectionKeys}::TEXT[]))
+  `;
+}
+
 
 // ─────────────────────────────────────────
 // XML → section chunks
@@ -274,6 +284,12 @@ async function main() {
 
   console.log(`✅  Extracted ${sections.length} sections:`);
   sections.forEach(s => console.log(`    • ${s.section_key} (${s.keywords.length} keywords)`));
+
+  const currentSectionKeys = sections.map(section => section.section_key);
+
+  console.log('\n🧹  Removing obsolete XML sections...');
+  await deleteObsoleteXmlSections(currentSectionKeys);
+  console.log('    Obsolete XML sections removed. ✓');
 
   console.log('\n⬆️   Upserting into Neon...');
   let inserted = 0;

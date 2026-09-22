@@ -4,6 +4,9 @@
 
 import { sql } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   const rows = await sql`
     SELECT
@@ -18,5 +21,14 @@ export async function GET() {
     ORDER BY cs.section_key
   `;
 
-  return Response.json({ sections: rows });
+  return Response.json(
+    { sections: rows },
+    {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      },
+    }
+  );
 }
