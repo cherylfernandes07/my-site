@@ -13,42 +13,53 @@
   <!-- ========== SUMMARY ========== -->
   <!-- Tip: Ask AI to rewrite this to match a job description -->
 <summary>
-  7+ years of Software Development. 
-  Experience in AI-assisted workflows using Angular, React,
-  Python/FastAPI, and Redis for high-scale, 
-  asynchronous processing in production environments. 
+7+ years of hands-on experience building consumer-facing products across frontend and backend.
+AI coding agents and tooling, scalable architecture upto 1 million users, 
+HCI principles and UI standards for responsiveness and accessibility.
 </summary>
 
   <!-- ========== SKILLS ========== -->
   <!-- Tip: Ask AI to reorder or add skills based on a job posting -->
 <skills>
-  <category name="Frontend Engineering">
-    <skill>Angular v18</skill>
-    <skill>React v18</skill>
-    <skill>Next.js</skill>
-    <skill>TypeScript</skill>
-    <skill>CopilotKit</skill>
-  </category>
-
-  <category name="Backend &amp; Platform">
+  <category name="Languages">
     <skill>Python</skill>
-    <skill>FastAPI</skill>
+    <skill>TypeScript / JavaScript</skill>
+    <skill>Go</skill>
     <skill>Java</skill>
-    <skill>Redis Caching</skill>
-    <skill>Apigee API Mgmt</skill>
-    <skill>CDN Optimization</skill>
-    <skill>PostgreSQL</skill>
-    <skill>Docker</skill>
+    <skill>SQL</skill>
   </category>
 
-  <category name="AI &amp; Automation">
-    <skill>Claude MCP</skill>
-    <skill>Google A2A</skill>
-    <skill>True Foundry</skill>
-    <skill>Scikit-learn</skill>
+  <category name="Frontend">
+    <skill>React</skill>
+    <skill>Next.js</skill>
+    <skill>Angular (NgRx / NGXS)</skill>
+    <skill>CopilotKit</skill>
+    <skill>Accessibility (WCAG)</skill>
+  </category>
+
+  <category name="Backend &amp; Data">
+    <skill>FastAPI</skill>
+    <skill>REST / WebSockets</skill>
+    <skill>PostgreSQL (Neon)</skill>
+    <skill>DynamoDB</skill>
+    <skill>Redis</skill>
+  </category>
+
+  <category name="AI / LLM">
+    <skill>RAG</skill>
+    <skill>LangGraph / LangChain</skill>
+    <skill>CrewAI / AutoGen</skill>
+    <skill>MCP / A2A</skill>
     <skill>Agentic Workflows</skill>
-    <skill>LangChain</skill>
-    <skill>Azure OpenAI</skill>
+    <skill>Scikit-learn</skill>
+  </category>
+
+  <category name="Cloud &amp; DevOps">
+    <skill>AWS (Bedrock, Lambda)</skill>
+    <skill>Azure (OpenAI, AI Search)</skill>
+    <skill>Alibaba Cloud (Function Compute)</skill>
+    <skill>Docker</skill>
+    <skill>Vercel</skill>
   </category>
 </skills>
 
@@ -102,8 +113,8 @@
   <company>Kenandy, Inc.</company>
   <title>UI Developer</title>
   <location>Redwood City, CA</location>
-  <start>Nov 2015</start>
-  <end>Jan 2018</end>
+  <start>Pre-AI</start>
+  <end></end>
   <bullets>
         <bullet>Migrated Kendo/jQuery to React with HOC patterns, D3.js visualizations, and Jest tests, improving maintainability by 35%.</bullet>
         <bullet>Built React Native apps with Salesforce and LWC integrations for iOS and Android, improving release consistency by 25%.</bullet>
@@ -118,7 +129,7 @@
   <company>StrongAuth, Inc.</company>
   <title>Software Engineer</title>
   <location>Sunnyvale, CA</location>
-  <start>Pre-2015</start>
+  <start>Pre-AI</start>
   <end></end>
   <bullets>
         <bullet>Built secure file storage and sharing products for banks and enterprise customers with strong authentication and compliance requirements.</bullet>
@@ -132,7 +143,7 @@
   <company>PowerCloud Systems, Inc.</company>
   <title>UI Designer</title>
   <location>PARC</location>
-  <start>Pre-2015</start>
+  <start>Pre-AI</start>
   <end></end>
   <description>Built responsive product websites, UI assets, and WordPress themes for cloud Wi-Fi products. Improving SEO visibility by 25%
   </description>
@@ -142,7 +153,7 @@
   <company>University of Illinois at Chicago</company>
   <title>Graduate Assistant, IT Technical Associate</title>
   <location>Chicago, IL</location>
-  <start>Pre-2015</start>
+  <start>Pre-AI</start>
   <end></end>
   <description>Built internal reporting tools, training workflows, and SQL-based record search utilities.</description>
 </job>
@@ -151,7 +162,7 @@
   <company>Flexi Resources</company>
   <title>Web Developer</title>
   <location>India</location>
-  <start>Pre-2015</start>
+  <start>Pre-AI</start>
   <end></end>
   <description>Delivered CMS websites, standards-compliant frontend templates, and PHP CRUD workflows.</description>
 </job>
@@ -194,50 +205,30 @@
   <!-- Optional: great for portfolio work or career changers -->
 <projects>
   <project>
+    <name>HailARide — Autonomous Taxi Hailing Platform (AWS Strands Hackathon)</name>
+    <description>Polyglot monorepo with a Go API gateway and fleet coordinator, Python FastAPI with Strands Decider 2B and Amazon Bedrock Guardrails, and a React/Mapbox live map for a simulated fleet. Designed for scale on DynamoDB (TTL, storage-interface pattern), with multi-stage Docker builds, docker-compose, SAM/Lambda deployment, and an architecture diagram.</description>
+    <link>https://github.com/cherylfernandes07/hailaride</link>
+  </project>
+  <project>
+    <name>LoopChat — AI Prior-Authorization Platform (Alibaba Cloud x AMD Agent Builder Challenge)</name>
+    <description>Next.js, Qwen via DashScope, RAG pipeline, NeonDB, and Resend, deployed with Alibaba Cloud Function Compute sandbox hibernation. Built the RAG pipeline, API routes, database schema, email integration, and all deployment with a teammate; presented at Demo Day, August 2026.</description>
+  </project>
+  <project>
     <name>AI Travel Planner with Multi-Agent A2A Protocol</name>
-    <description>Python, NextJS, Vercel, Redis with Railway, Cloud-hosted NeonDB, Clerk auth with Google OAuth</description>
+    <description>Five cooperating agents using the A2A protocol, with FastAPI, Next.js, Groq, Redis, NeonDB, and Clerk auth. Deployed on Railway and Vercel.</description>
     <link>https://github.com/cherylfernandes07/travel-planner-a2a</link>
   </project>
-  <project>
-    <name>RAG Chatbot Using DeepSeek and LlamaIndex</name>
-    <description>Chat interface using ChainLit. Groq-hosted LLMs like DeepSeek ultra-fast inference. LlamaIndex for indexing and retrieval</description>
-  </project>
-  <project>
-    <name>ResearchFlow AI — Multi-Agent Research System</name>
-    <description>Identifies papers, extracts insights, compiles reports, and identifies research gaps, integrating automation with human oversight to facilitate an interactive workflow.</description>
-  </project>
-  <project>
-    <name>AI-Powered Resume Assistant</name>
-    <description>Built a Next.js AI chat app with Gemini, Pinecone RAG, streaming UX, and guardrails.</description>
-    <link>https://my-site-sigma-mauve.vercel.app/</link>
-  </project>
-  <project>
-    <name>Multi-Agent Job Search Assistant</name>
-    <description>Built CrewAI and LangChain agents for job discovery, resume tailoring, and outreach.</description>
-    <link>https://crewai-app-june.streamlit.app/</link>
-  </project>
-  <project>
-    <name>DeepSeek Models via OpenRouter</name>
-    <description>Integrate multiple DeepSeek models into a Python workflow using the OpenRouter API. Summarizing research, writing support emails, generating social content.</description>
-  </project>
 </projects>
-
-
-
-
   <!-- ========== ACADEMIC WORK ========== -->
   <!-- <academic>
     <area></area>
   </academic> -->
 
   <!-- ========== OTHER EXPERIENCE ========== -->
-  <other>
-    <category name="Hackathons &amp; Volunteering">
-      <item>LoopChat Alibaba Cloud &amp; AMD Agent Builder Day Team #4 - Beta University - August 2026</item>
-      <item>DevNetwork [AI + ML] Hackathon 2026 Participant - June 2026</item>
-      <item>Won first place at a data mining gender prediction classification algorithm to classify pieces of text using LingPipe</item>
-      <item>Won SF Fashion Week, The Expat Woman Hackathon, Techtonica Mentor</item>      
-      <item>Calendar interface for small-screen devices</item>
-    </category>
-  </other>
+<other>
+  <category name="Awards &amp; Community">
+    <item>1st place, text-classification data mining competition (LingPipe); winner, SF Fashion Week and The Expat Woman hackathons</item>
+    <item>Mentor, Techtonica; open-source contributor, Orcasound</item>
+  </category>
+</other>
 </resume>
